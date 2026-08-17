@@ -1,0 +1,7 @@
+[
+  {
+    "image": "assets/sample_data/sample1.jpg",
+    "instruction": "Describe this image in detail.",
+    "response": "This is a sample multimodal dataset entry."
+  }
+]
