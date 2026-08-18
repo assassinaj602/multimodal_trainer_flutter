@@ -9,12 +9,12 @@ class TrainerService {
     required String imagePath,
     required String prompt,
   }) async {
-    await _bridge.forwardPass(
+    final loss = await _bridge.forwardPass(
       imagePath: imagePath,
       textPrompt: prompt,
       isTraining: true,
     );
     await _bridge.backwardPass();
-    return 0.45; // Dummy loss value for skeleton pipeline testing
+    return loss;
   }
 }

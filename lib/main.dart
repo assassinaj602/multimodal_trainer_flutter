@@ -12,40 +12,39 @@ import 'services/trainer_service.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  runApp(const MultimodalTrainerApp());
+}
 
-  final nativeBridge = NativeBridge();
-  final modelService = ModelService(nativeBridge);
-  final trainerService = TrainerService(nativeBridge);
-  final datasetService = DatasetService();
+class MultimodalTrainerApp extends StatelessWidget {
+  final NativeBridge? nativeBridge;
 
-  runApp(
-    MultiProvider(
+  const MultimodalTrainerApp({super.key, this.nativeBridge});
+
+  @override
+  Widget build(BuildContext context) {
+    final bridge = nativeBridge ?? NativeBridge();
+    final modelService = ModelService(bridge);
+    final trainerService = TrainerService(bridge);
+    final datasetService = DatasetService();
+
+    return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AppState()),
         ChangeNotifierProvider(create: (_) => ModelProvider(modelService)),
         ChangeNotifierProvider(create: (_) => TrainingProvider(trainerService, datasetService)),
       ],
-      child: const MultimodalTrainerApp(),
-    ),
-  );
-}
-
-class MultimodalTrainerApp extends StatelessWidget {
-  const MultimodalTrainerApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Multimodal Trainer',
-      debugShowCheckedModeBanner: false,
-      themeMode: ThemeMode.dark,
-      darkTheme: ThemeData.dark(useMaterial3: true).copyWith(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.deepPurple,
-          brightness: Brightness.dark,
+      child: MaterialApp(
+        title: 'Multimodal Trainer',
+        debugShowCheckedModeBanner: false,
+        themeMode: ThemeMode.dark,
+        darkTheme: ThemeData.dark(useMaterial3: true).copyWith(
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: Colors.deepPurple,
+            brightness: Brightness.dark,
+          ),
         ),
+        home: const HomeScreen(),
       ),
-      home: const HomeScreen(),
     );
   }
 }

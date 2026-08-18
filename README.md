@@ -22,6 +22,14 @@ The primary goal of this phase is to establish the end-to-end forward/backward f
 - [x] Asset pipeline configured (`assets/models/`, `assets/datasets/`, `assets/sample_data/`)
 - [x] Basic Flutter skeleton app UI created (Material 3 Theme, Provider State Management)
 
+### Phase 2: Native C++ Library Integration ✅
+- [x] Integrated `llama.cpp` C/C++ engine and headers (`llama.h`, `ggml.h`)
+- [x] Integrated `libmtmd` vision encoder interface for Qwen3.5-VL (`mtmd.h`)
+- [x] Integrated `MobileFineTuner` autograd and backward engine (`autograd.h`)
+- [x] Configured native bridge via CMake (`CMakeLists.txt` compiling `libmultimodal_trainer.so`)
+- [x] Implemented native C exports: `loadModel()`, `unloadModel()`, `getModelStatus()`, `forwardPass()`, `backwardPass()`
+- [x] Generated Dart FFI bindings (`native_bindings.dart`) and `NativeBridge` service
+
 ---
 
 ## 💻 Android Emulator / AVD Recommended Configuration
@@ -46,7 +54,12 @@ The primary goal of this phase is to establish the end-to-end forward/backward f
    flutter analyze
    ```
 
-3. **Run on Android Emulator:**
+3. **Run tests:**
+   ```bash
+   flutter test
+   ```
+
+4. **Run on Android Emulator:**
    ```bash
    flutter run
    ```
