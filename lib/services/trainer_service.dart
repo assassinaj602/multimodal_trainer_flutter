@@ -82,6 +82,26 @@ class TrainerService {
     Logger.log('TrainerService: Training stream completed successfully');
   }
 
+  Future<bool> saveCheckpoint({
+    required String filepath,
+    required int epoch,
+    required int step,
+  }) async {
+    return _bridge.saveCheckpoint(filepath: filepath, epoch: epoch, step: step);
+  }
+
+  Future<bool> loadCheckpoint({
+    required String filepath,
+  }) async {
+    return _bridge.loadCheckpoint(filepath: filepath);
+  }
+
+  Future<bool> exportModel({
+    required String outputPath,
+  }) async {
+    return _bridge.exportModelGGUF(outputPath: outputPath);
+  }
+
   void cancel() {
     _isCancelled = true;
   }

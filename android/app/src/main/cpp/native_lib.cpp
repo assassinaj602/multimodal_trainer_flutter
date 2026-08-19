@@ -89,6 +89,42 @@ const char* runTrainingStep(
     return step_json_cache.c_str();
 }
 
+// 3. Checkpointing & Model Export
+__attribute__((visibility("default")))
+int32_t saveCheckpoint(
+    void* handle_ptr,
+    const char* filepath,
+    int32_t epoch,
+    int32_t step
+) {
+    LOGI("saveCheckpoint requested: %s", filepath ? filepath : "NULL");
+    auto* handle = reinterpret_cast<ModelHandle*>(handle_ptr);
+    bool ok = save_model_checkpoint(handle, filepath, epoch, step);
+    return ok ? 1 : 0;
+}
+
+__attribute__((visibility("default")))
+int32_t loadCheckpoint(
+    void* handle_ptr,
+    const char* filepath
+) {
+    LOGI("loadCheckpoint requested: %s", filepath ? filepath : "NULL");
+    auto* handle = reinterpret_cast<ModelHandle*>(handle_ptr);
+    bool ok = load_model_checkpoint(handle, filepath);
+    return ok ? 1 : 0;
+}
+
+__attribute__((visibility("default")))
+int32_t exportModelGGUF(
+    void* handle_ptr,
+    const char* output_path
+) {
+    LOGI("exportModelGGUF requested: %s", output_path ? output_path : "NULL");
+    auto* handle = reinterpret_cast<ModelHandle*>(handle_ptr);
+    bool ok = export_model_gguf(handle, output_path);
+    return ok ? 1 : 0;
+}
+
 __attribute__((visibility("default")))
 void freeForwardResult(void* result_ptr) {
     if (!result_ptr) return;

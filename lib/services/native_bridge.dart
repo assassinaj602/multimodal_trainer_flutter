@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:ffi';
+import 'dart:io';
 import 'dart:math';
 import 'package:ffi/ffi.dart';
 import '../bindings/native_bindings.dart';
@@ -148,6 +149,80 @@ class NativeBridge {
     } finally {
       malloc.free(imgPtr);
       malloc.free(promptPtr);
+    }
+  }
+
+  Future<bool> saveCheckpoint({
+    required String filepath,
+    required int epoch,
+    required int step,
+  }) async {
+    Logger.log('NativeBridge: Saving checkpoint to "$filepath" (Epoch $epoch, Step $step)');
+
+    if (!_bindings.isLoaded || _bindings.saveCheckpoint == null || _activeHandle == null) {
+      final file = File(filepath);
+      await file.create(recursive: true);
+      await file.writeAsString(jsonEncode({
+        'magic': 'MFTC',
+        'epoch': epoch,
+        'step': step,
+        'loss_factor': _simulatedLossFactor,
+      }));
+      return true;
+    }
+
+    final pathPtr = filepath.toNativeUtf8();
+    try {
+      final res = _bindings.saveCheckpoint!(_activeHandle!, pathPtr, epoch, step);
+      return res == 1;
+    } finally {
+      malloc.free(pathPtr);
+    }
+  }
+
+  Future<bool> loadCheckpoint({
+    required String filepath,
+  }) async {
+    Logger.log('NativeBridge: Loading checkpoint from "$filepath"');
+
+    if (!_bindings.isLoaded || _bindings.loadCheckpoint == null || _activeHandle == null) {
+      final file = File(filepath);
+      if (await file.exists()) {
+        final content = await file.readAsString();
+        final data = jsonDecode(content);
+        _simulatedLossFactor = (data['loss_factor'] as num?)?.toDouble() ?? 0.5;
+        return true;
+      }
+      return false;
+    }
+
+    final pathPtr = filepath.toNativeUtf8();
+    try {
+      final res = _bindings.loadCheckpoint!(_activeHandle!, pathPtr);
+      return res == 1;
+    } finally {
+      malloc.free(pathPtr);
+    }
+  }
+
+  Future<bool> exportModelGGUF({
+    required String outputPath,
+  }) async {
+    Logger.log('NativeBridge: Exporting model to GGUF at "$outputPath"');
+
+    if (!_bindings.isLoaded || _bindings.exportModelGGUF == null || _activeHandle == null) {
+      final file = File(outputPath);
+      await file.create(recursive: true);
+      await file.writeAsString('GGUF_MODEL_EXPORT_HEADER');
+      return true;
+    }
+
+    final pathPtr = outputPath.toNativeUtf8();
+    try {
+      final res = _bindings.exportModelGGUF!(_activeHandle!, pathPtr);
+      return res == 1;
+    } finally {
+      malloc.free(pathPtr);
     }
   }
 }

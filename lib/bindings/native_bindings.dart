@@ -50,6 +50,37 @@ typedef RunTrainingStepDart = Pointer<Utf8> Function(
   double learningRate,
 );
 
+typedef SaveCheckpointNative = Int32 Function(
+  Pointer<Void> handle,
+  Pointer<Utf8> filepath,
+  Int32 epoch,
+  Int32 step,
+);
+typedef SaveCheckpointDart = int Function(
+  Pointer<Void> handle,
+  Pointer<Utf8> filepath,
+  int epoch,
+  int step,
+);
+
+typedef LoadCheckpointNative = Int32 Function(
+  Pointer<Void> handle,
+  Pointer<Utf8> filepath,
+);
+typedef LoadCheckpointDart = int Function(
+  Pointer<Void> handle,
+  Pointer<Utf8> filepath,
+);
+
+typedef ExportModelGGUFNative = Int32 Function(
+  Pointer<Void> handle,
+  Pointer<Utf8> outputPath,
+);
+typedef ExportModelGGUFDart = int Function(
+  Pointer<Void> handle,
+  Pointer<Utf8> outputPath,
+);
+
 typedef FreeForwardResultNative = Void Function(Pointer<Void> forwardResult);
 typedef FreeForwardResultDart = void Function(Pointer<Void> forwardResult);
 
@@ -100,6 +131,18 @@ class NativeBindings {
   late final RunTrainingStepDart? runTrainingStep = _lib
       ?.lookup<NativeFunction<RunTrainingStepNative>>('runTrainingStep')
       .asFunction<RunTrainingStepDart>();
+
+  late final SaveCheckpointDart? saveCheckpoint = _lib
+      ?.lookup<NativeFunction<SaveCheckpointNative>>('saveCheckpoint')
+      .asFunction<SaveCheckpointDart>();
+
+  late final LoadCheckpointDart? loadCheckpoint = _lib
+      ?.lookup<NativeFunction<LoadCheckpointNative>>('loadCheckpoint')
+      .asFunction<LoadCheckpointDart>();
+
+  late final ExportModelGGUFDart? exportModelGGUF = _lib
+      ?.lookup<NativeFunction<ExportModelGGUFNative>>('exportModelGGUF')
+      .asFunction<ExportModelGGUFDart>();
 
   late final FreeForwardResultDart? freeForwardResult = _lib
       ?.lookup<NativeFunction<FreeForwardResultNative>>('freeForwardResult')

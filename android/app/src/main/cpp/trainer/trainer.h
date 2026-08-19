@@ -41,6 +41,23 @@ NativeTrainingStepResult run_training_step(
     float learning_rate
 );
 
+bool save_model_checkpoint(
+    ModelHandle* handle,
+    const char* filepath,
+    int32_t epoch,
+    int32_t step
+);
+
+bool load_model_checkpoint(
+    ModelHandle* handle,
+    const char* filepath
+);
+
+bool export_model_gguf(
+    ModelHandle* handle,
+    const char* output_path
+);
+
 void free_native_forward_result(NativeForwardResult* result);
 
 #endif // TRAINER_H

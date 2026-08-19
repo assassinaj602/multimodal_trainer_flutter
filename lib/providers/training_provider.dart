@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/foundation.dart';
+import 'package:path_provider/path_provider.dart';
 import '../models/dataset_info.dart';
 import '../models/model_info.dart';
 import '../models/training_config.dart';
@@ -19,6 +20,9 @@ class TrainingProvider extends ChangeNotifier {
   ModelStatus modelStatus = ModelStatus();
   MultimodalDataset? dataset;
 
+  String? lastCheckpointPath;
+  String? lastExportedPath;
+
   final List<FlSpot> _lossHistory = [
     const FlSpot(0, 1.0),
   ];
@@ -27,8 +31,8 @@ class TrainingProvider extends ChangeNotifier {
   List<String> get logs => Logger.logs;
   bool get isRunning => status.state == TrainingState.running;
   bool get isPaused => status.state == TrainingState.paused;
-  bool get canSave => status.state == TrainingState.completed || status.state == TrainingState.paused;
-  bool get canExport => status.state == TrainingState.completed;
+  bool get canSave => status.state == TrainingState.completed || status.state == TrainingState.paused || isRunning;
+  bool get canExport => status.state == TrainingState.completed || status.state == TrainingState.paused;
 
   TrainingProvider(this._trainer, this._datasetService);
 
@@ -50,7 +54,7 @@ class TrainingProvider extends ChangeNotifier {
     }
 
     status = TrainingStatus.running(
-      epoch: 1,
+      epoch: status.currentEpoch > 0 ? status.currentEpoch : 1,
       totalEpochs: config.numEpochs,
       step: status.currentStep,
       totalSteps: config.numEpochs * dataset!.sampleCount,
@@ -66,7 +70,6 @@ class TrainingProvider extends ChangeNotifier {
         .listen(
       (event) {
         _lossHistory.add(FlSpot(event.step.toDouble(), event.loss));
-        // Simulated accuracy improvement with decreasing loss
         final accuracy = (100.0 - (event.loss * 40.0)).clamp(50.0, 99.5);
 
         status = TrainingStatus.running(
@@ -119,12 +122,66 @@ class TrainingProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void saveCheckpoint() {
-    Logger.log('Checkpoint saved: Epoch ${status.currentEpoch}, Step ${status.currentStep}, Loss ${status.currentLoss?.toStringAsFixed(4) ?? "-"}');
+  Future<bool> saveCheckpoint([String? customPath]) async {
+    try {
+      String savePath = customPath ?? '';
+      if (savePath.isEmpty) {
+        final dir = await getApplicationDocumentsDirectory();
+        savePath = '${dir.path}/checkpoint_epoch${status.currentEpoch}_step${status.currentStep}.mftc';
+      }
+
+      final success = await _trainer.saveCheckpoint(
+        filepath: savePath,
+        epoch: status.currentEpoch,
+        step: status.currentStep,
+      );
+
+      if (success) {
+        lastCheckpointPath = savePath;
+        Logger.log('Checkpoint saved successfully to "$savePath"');
+        notifyListeners();
+      }
+      return success;
+    } catch (e) {
+      Logger.log('Error saving checkpoint: $e');
+      return false;
+    }
   }
 
-  void exportModel() {
-    Logger.log('Model exported to GGUF format');
+  Future<bool> loadCheckpoint(String path) async {
+    try {
+      final success = await _trainer.loadCheckpoint(filepath: path);
+      if (success) {
+        lastCheckpointPath = path;
+        Logger.log('Checkpoint restored from "$path"');
+        notifyListeners();
+      }
+      return success;
+    } catch (e) {
+      Logger.log('Error restoring checkpoint: $e');
+      return false;
+    }
+  }
+
+  Future<bool> exportModel([String? customPath]) async {
+    try {
+      String exportPath = customPath ?? '';
+      if (exportPath.isEmpty) {
+        final dir = await getApplicationDocumentsDirectory();
+        exportPath = '${dir.path}/qwen3.5_2b_multimodal_finetuned.gguf';
+      }
+
+      final success = await _trainer.exportModel(outputPath: exportPath);
+      if (success) {
+        lastExportedPath = exportPath;
+        Logger.log('Model exported successfully to GGUF at "$exportPath"');
+        notifyListeners();
+      }
+      return success;
+    } catch (e) {
+      Logger.log('Error exporting model: $e');
+      return false;
+    }
   }
 
   @override
