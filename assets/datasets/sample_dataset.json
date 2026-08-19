@@ -1,7 +1,52 @@
 [
   {
     "image": "assets/sample_data/sample1.jpg",
-    "instruction": "Describe this image in detail.",
-    "response": "This is a sample multimodal dataset entry."
+    "instruction": "Describe the main object in the foreground.",
+    "response": "A high-resolution mobile edge intelligence system running localized multimodal models."
+  },
+  {
+    "image": "assets/sample_data/sample2.jpg",
+    "instruction": "Identify any text visible in this frame.",
+    "response": "The text reads 'Duke Kunshan University Edge Intelligence Lab'."
+  },
+  {
+    "image": "assets/sample_data/sample3.jpg",
+    "instruction": "What is the primary background color?",
+    "response": "The background consists of deep blue and purple gradient tones."
+  },
+  {
+    "image": "assets/sample_data/sample4.jpg",
+    "instruction": "Is there a person present in the image?",
+    "response": "No person is detected; the scene displays edge AI hardware."
+  },
+  {
+    "image": "assets/sample_data/sample5.jpg",
+    "instruction": "Summarize the visual context of this screenshot.",
+    "response": "Real-time loss convergence visualization for on-device fine-tuning."
+  },
+  {
+    "image": "assets/sample_data/sample6.jpg",
+    "instruction": "What type of device is shown?",
+    "response": "An Android emulator environment configured with API level 30 and 8GB RAM."
+  },
+  {
+    "image": "assets/sample_data/sample7.jpg",
+    "instruction": "Count the number of cards on screen.",
+    "response": "There are four primary status and control cards displayed."
+  },
+  {
+    "image": "assets/sample_data/sample8.jpg",
+    "instruction": "Analyze the loss trend shown in the chart.",
+    "response": "The loss curve demonstrates steady convergence across consecutive training steps."
+  },
+  {
+    "image": "assets/sample_data/sample9.jpg",
+    "instruction": "What model architecture is currently loaded?",
+    "response": "Qwen3.5-2B Vision-Language Model with GGUF quantization."
+  },
+  {
+    "image": "assets/sample_data/sample10.jpg",
+    "instruction": "Provide a conclusion for the multimodal test sample.",
+    "response": "Multimodal token embeddings successfully integrated with autograd backward engine."
   }
 ]

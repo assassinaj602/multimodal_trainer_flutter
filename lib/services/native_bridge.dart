@@ -1,11 +1,26 @@
+import 'dart:convert';
 import 'dart:ffi';
+import 'dart:math';
 import 'package:ffi/ffi.dart';
 import '../bindings/native_bindings.dart';
 import '../utils/logger.dart';
 
+class StepResult {
+  final double loss;
+  final double gradientNorm;
+  final bool success;
+
+  StepResult({
+    required this.loss,
+    required this.gradientNorm,
+    required this.success,
+  });
+}
+
 class NativeBridge {
   final NativeBindings _bindings = NativeBindings();
   Pointer<Void>? _activeHandle;
+  double _simulatedLossFactor = 1.0;
 
   bool get isNativeAvailable => _bindings.isLoaded;
 
@@ -13,7 +28,8 @@ class NativeBridge {
     Logger.log('NativeBridge: Loading model from $modelPath');
 
     if (!_bindings.isLoaded || _bindings.loadModel == null) {
-      Logger.log('NativeBridge: Using simulated backend (libmultimodal_trainer.so loaded on Android device)');
+      Logger.log('NativeBridge: Using simulated model engine');
+      _simulatedLossFactor = 1.0;
       return 'MockHandle_LoadedSuccessfully';
     }
 
@@ -34,6 +50,7 @@ class NativeBridge {
       _bindings.unloadModel!(_activeHandle!);
       _activeHandle = null;
     }
+    _simulatedLossFactor = 1.0;
   }
 
   Future<String> getModelStatus() async {
@@ -49,10 +66,10 @@ class NativeBridge {
     required String textPrompt,
     required bool isTraining,
   }) async {
-    Logger.log('NativeBridge: Running forward pass on "$textPrompt"');
+    Logger.log('NativeBridge: Forward pass on "$textPrompt"');
 
     if (!_bindings.isLoaded || _bindings.forwardPass == null || _activeHandle == null) {
-      return 0.42; // Simulation baseline loss
+      return 0.45 * _simulatedLossFactor;
     }
 
     final imgPtr = imagePath.toNativeUtf8();
@@ -83,7 +100,54 @@ class NativeBridge {
   }
 
   Future<bool> backwardPass() async {
-    Logger.log('NativeBridge: Running backward pass and optimizer update');
+    Logger.log('NativeBridge: Backward pass executed');
+    _simulatedLossFactor = max(0.05, _simulatedLossFactor * 0.90);
     return true;
+  }
+
+  Future<StepResult> runTrainingStep({
+    required String imagePath,
+    required String prompt,
+    required double learningRate,
+  }) async {
+    Logger.log('NativeBridge: Executing training step with lr=$learningRate');
+
+    if (!_bindings.isLoaded || _bindings.runTrainingStep == null || _activeHandle == null) {
+      final currentLoss = 0.85 * _simulatedLossFactor;
+      final gradNorm = 0.045 * _simulatedLossFactor;
+      _simulatedLossFactor = max(0.05, _simulatedLossFactor * 0.90);
+
+      return StepResult(
+        loss: currentLoss,
+        gradientNorm: gradNorm,
+        success: true,
+      );
+    }
+
+    final imgPtr = imagePath.toNativeUtf8();
+    final promptPtr = prompt.toNativeUtf8();
+
+    try {
+      final jsonPtr = _bindings.runTrainingStep!(
+        _activeHandle!,
+        imgPtr,
+        promptPtr,
+        learningRate,
+      );
+      final jsonStr = jsonPtr.toDartString();
+      final Map<String, dynamic> data = jsonDecode(jsonStr);
+
+      return StepResult(
+        loss: (data['loss'] as num?)?.toDouble() ?? 0.0,
+        gradientNorm: (data['gradient_norm'] as num?)?.toDouble() ?? 0.0,
+        success: (data['success'] as bool?) ?? false,
+      );
+    } catch (e) {
+      Logger.log('NativeBridge Error in runTrainingStep: $e');
+      return StepResult(loss: 0.0, gradientNorm: 0.0, success: false);
+    } finally {
+      malloc.free(imgPtr);
+      malloc.free(promptPtr);
+    }
   }
 }

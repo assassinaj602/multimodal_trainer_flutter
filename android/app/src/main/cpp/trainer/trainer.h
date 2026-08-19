@@ -15,6 +15,13 @@ struct NativeForwardResult {
     int32_t tokens_size = 0;
 };
 
+struct NativeTrainingStepResult {
+    float loss;
+    float gradient_norm;
+    int32_t step_index;
+    bool success;
+};
+
 NativeForwardResult* execute_forward_pass(
     ModelHandle* handle,
     const char* image_path,
@@ -25,6 +32,13 @@ NativeForwardResult* execute_forward_pass(
 bool execute_backward_pass(
     ModelHandle* handle,
     NativeForwardResult* forward_result
+);
+
+NativeTrainingStepResult run_training_step(
+    ModelHandle* handle,
+    const char* image_path,
+    const char* text_prompt,
+    float learning_rate
 );
 
 void free_native_forward_result(NativeForwardResult* result);

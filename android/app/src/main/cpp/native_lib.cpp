@@ -2,6 +2,7 @@
 #include "trainer/trainer.h"
 #include <android/log.h>
 #include <cstring>
+#include <sstream>
 
 #define LOG_TAG "MultimodalTrainerNative"
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
@@ -66,6 +67,26 @@ int32_t backwardPass(void* handle_ptr, void* forward_result_ptr) {
     auto* result = reinterpret_cast<NativeForwardResult*>(forward_result_ptr);
     bool ok = execute_backward_pass(handle, result);
     return ok ? 1 : 0;
+}
+
+__attribute__((visibility("default")))
+const char* runTrainingStep(
+    void* handle_ptr,
+    const char* image_path,
+    const char* text_prompt,
+    float learning_rate
+) {
+    auto* handle = reinterpret_cast<ModelHandle*>(handle_ptr);
+    NativeTrainingStepResult step = run_training_step(handle, image_path, text_prompt, learning_rate);
+
+    static std::string step_json_cache;
+    std::ostringstream oss;
+    oss << "{\"loss\":" << step.loss
+        << ",\"gradient_norm\":" << step.gradient_norm
+        << ",\"success\":" << (step.success ? "true" : "false")
+        << "}";
+    step_json_cache = oss.str();
+    return step_json_cache.c_str();
 }
 
 __attribute__((visibility("default")))

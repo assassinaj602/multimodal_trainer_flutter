@@ -1,5 +1,6 @@
 #include "trainer.h"
 #include "../vision/encoder.h"
+#include <cmath>
 #include <cstring>
 #include <vector>
 
@@ -78,7 +79,7 @@ NativeForwardResult* execute_forward_pass(
         result->tokens[i] = tokens[i];
     }
 
-    // Compute initial loss if training
+    // Compute loss if training
     if (is_training && handle->autograd) {
         result->loss = autograd_compute_loss(
             handle->autograd,
@@ -114,6 +115,49 @@ bool execute_backward_pass(
     autograd_step_optimizer(handle->autograd, 0.001f);
 
     return true;
+}
+
+NativeTrainingStepResult run_training_step(
+    ModelHandle* handle,
+    const char* image_path,
+    const char* text_prompt,
+    float learning_rate
+) {
+    NativeTrainingStepResult step_result{0.0f, 0.0f, 0, false};
+    if (!handle || !handle->is_initialized) return step_result;
+
+    // Run forward pass
+    NativeForwardResult* fwd = execute_forward_pass(handle, image_path, text_prompt, true);
+    if (!fwd) return step_result;
+
+    step_result.loss = fwd->loss;
+
+    // Run backward pass and optimizer update
+    std::vector<float> gradients(fwd->logits_size, 0.0f);
+    if (handle->autograd) {
+        autograd_compute_loss_gradients(
+            handle->autograd,
+            fwd->logits,
+            fwd->logits_size,
+            fwd->tokens,
+            fwd->tokens_size,
+            gradients.data()
+        );
+
+        // Compute gradient norm
+        float sq_sum = 0.0f;
+        for (float g : gradients) {
+            sq_sum += g * g;
+        }
+        step_result.gradient_norm = std::sqrt(sq_sum);
+
+        autograd_backward(handle->autograd, gradients.data(), gradients.size());
+        autograd_step_optimizer(handle->autograd, learning_rate);
+    }
+
+    free_native_forward_result(fwd);
+    step_result.success = true;
+    return step_result;
 }
 
 void free_native_forward_result(NativeForwardResult* result) {

@@ -37,6 +37,19 @@ typedef BackwardPassDart = int Function(
   Pointer<Void> forwardResult,
 );
 
+typedef RunTrainingStepNative = Pointer<Utf8> Function(
+  Pointer<Void> handle,
+  Pointer<Utf8> imagePath,
+  Pointer<Utf8> textPrompt,
+  Float learningRate,
+);
+typedef RunTrainingStepDart = Pointer<Utf8> Function(
+  Pointer<Void> handle,
+  Pointer<Utf8> imagePath,
+  Pointer<Utf8> textPrompt,
+  double learningRate,
+);
+
 typedef FreeForwardResultNative = Void Function(Pointer<Void> forwardResult);
 typedef FreeForwardResultDart = void Function(Pointer<Void> forwardResult);
 
@@ -53,7 +66,6 @@ class NativeBindings {
         return DynamicLibrary.open('multimodal_trainer.dll');
       }
     } catch (_) {
-      // Dynamic library not present on host environment
       return null;
     }
     return null;
@@ -84,6 +96,10 @@ class NativeBindings {
   late final BackwardPassDart? backwardPass = _lib
       ?.lookup<NativeFunction<BackwardPassNative>>('backwardPass')
       .asFunction<BackwardPassDart>();
+
+  late final RunTrainingStepDart? runTrainingStep = _lib
+      ?.lookup<NativeFunction<RunTrainingStepNative>>('runTrainingStep')
+      .asFunction<RunTrainingStepDart>();
 
   late final FreeForwardResultDart? freeForwardResult = _lib
       ?.lookup<NativeFunction<FreeForwardResultNative>>('freeForwardResult')
