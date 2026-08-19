@@ -16,12 +16,26 @@ class DatasetSample {
       response: json['response'] ?? '',
     );
   }
+
+  Map<String, dynamic> toJson() => {
+        'image': imagePath,
+        'instruction': instruction,
+        'response': response,
+      };
 }
 
 class MultimodalDataset {
+  final String name;
   final List<DatasetSample> samples;
 
-  MultimodalDataset({required this.samples});
-  
+  MultimodalDataset({
+    this.name = 'Qwen3.5-VL Fine-Tuning Corpus',
+    required this.samples,
+  });
+
   int get sampleCount => samples.length;
+
+  List<DatasetSample> getPreviewSamples({int count = 5}) {
+    return samples.take(count).toList();
+  }
 }
