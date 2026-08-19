@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../providers/model_provider.dart';
 import '../providers/training_provider.dart';
 import '../widgets/log_viewer.dart';
 import '../widgets/loss_graph.dart';
@@ -79,14 +80,14 @@ class _DashboardView extends StatelessWidget {
           ),
         ],
       ),
-      body: Consumer<TrainingProvider>(
-        builder: (context, provider, child) {
+      body: Consumer2<TrainingProvider, ModelProvider>(
+        builder: (context, provider, modelProvider, child) {
           return SingleChildScrollView(
             padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ModelStatusCard(status: provider.modelStatus),
+                ModelStatusCard(status: modelProvider.status),
                 const SizedBox(height: 16),
                 TrainingControls(
                   config: provider.config,

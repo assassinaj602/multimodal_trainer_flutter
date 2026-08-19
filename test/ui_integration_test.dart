@@ -11,7 +11,7 @@ void main() {
 
     // 1. Verify Home dashboard elements render
     expect(find.text('MobileFineTuner — Qwen3.5-2B'), findsOneWidget);
-    expect(find.text('Model Target: Qwen3.5-2B'), findsOneWidget);
+    expect(find.text('Target VLM: Qwen3.5-2B'), findsOneWidget);
     expect(find.text('Start'), findsOneWidget);
 
     // 2. Navigate to Trainer tab by text label
@@ -34,6 +34,7 @@ void main() {
     // 5. Navigate back to Dashboard and test Start Training trigger
     await tester.tap(find.text('Dashboard'));
     await tester.pumpAndSettle();
+    await tester.ensureVisible(find.text('Start'));
     await tester.tap(find.text('Start'));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 100));

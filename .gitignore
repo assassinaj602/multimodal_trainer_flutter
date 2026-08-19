@@ -43,3 +43,13 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Large Model Weights and Checkpoints (~4.5GB VLM models)
+*.gguf
+*.bin
+*.mftc
+*.pt
+*.onnx
+assets/models/*.gguf
+assets/models/*.bin
+!assets/models/.gitkeep
