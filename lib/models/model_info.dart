@@ -26,6 +26,6 @@ class ModelStatus {
     this.size = '4.5 GB',
     this.memoryUsage = '0 MB',
     this.totalMemory = '8 GB',
-    this.modelPath = 'assets/models/qwen3.5-2b.gguf',
+    this.modelPath = 'assets/models/Qwen3.5-2B-BF16.gguf',
   });
 }

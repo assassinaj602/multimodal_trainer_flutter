@@ -10,6 +10,6 @@ class TrainingConfig {
     this.batchSize = 1,
     this.learningRate = 0.001,
     this.datasetPath = 'assets/datasets/sample_dataset.json',
-    this.modelPath = 'assets/models/qwen3.5-2b.gguf',
+    this.modelPath = 'assets/models/Qwen3.5-2B-BF16.gguf',
   });
 }
