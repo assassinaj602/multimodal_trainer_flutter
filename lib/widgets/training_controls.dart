@@ -101,8 +101,10 @@ class _TrainingControlsState extends State<TrainingControls> {
               },
             ),
             const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              alignment: WrapAlignment.spaceEvenly,
               children: [
                 ElevatedButton.icon(
                   onPressed: widget.isRunning ? null : widget.onStart,

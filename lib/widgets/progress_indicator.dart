@@ -27,8 +27,10 @@ class ProgressSection extends StatelessWidget {
               borderRadius: BorderRadius.circular(6),
             ),
             const SizedBox(height: 12),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            Wrap(
+              alignment: WrapAlignment.spaceBetween,
+              runSpacing: 4,
+              spacing: 8,
               children: [
                 Text('${status.progress.toStringAsFixed(1)}%'),
                 Text('Epoch: ${status.currentEpoch}/${status.totalEpochs}'),
@@ -36,8 +38,10 @@ class ProgressSection extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 8),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            Wrap(
+              alignment: WrapAlignment.spaceBetween,
+              runSpacing: 4,
+              spacing: 8,
               children: [
                 Text('Current Loss: ${status.currentLoss?.toStringAsFixed(4) ?? "-"}'),
                 Text('State: ${status.state.name}'),

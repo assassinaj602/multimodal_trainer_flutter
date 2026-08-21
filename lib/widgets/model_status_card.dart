@@ -68,18 +68,23 @@ class ModelStatusCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  children: [
-                    Icon(
-                      status.isLoaded ? Icons.check_circle : Icons.model_training,
-                      color: status.isLoaded ? Colors.greenAccent : Colors.orangeAccent,
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      'Target VLM: ${status.modelName}',
-                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                    ),
-                  ],
+                Expanded(
+                  child: Row(
+                    children: [
+                      Icon(
+                        status.isLoaded ? Icons.check_circle : Icons.model_training,
+                        color: status.isLoaded ? Colors.greenAccent : Colors.orangeAccent,
+                      ),
+                      const SizedBox(width: 8),
+                      Flexible(
+                        child: Text(
+                          'Target VLM: ${status.modelName}',
+                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
                 IconButton(
                   icon: const Icon(Icons.edit_note),

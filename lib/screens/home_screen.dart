@@ -130,8 +130,10 @@ class _DashboardView extends StatelessWidget {
                 const SizedBox(height: 16),
                 LogViewer(logs: provider.logs),
                 const SizedBox(height: 16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                Wrap(
+                  spacing: 12,
+                  runSpacing: 12,
+                  alignment: WrapAlignment.center,
                   children: [
                     ElevatedButton.icon(
                       onPressed: provider.canSave
