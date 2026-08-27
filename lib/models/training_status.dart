@@ -45,7 +45,24 @@ class TrainingStatus {
         currentAccuracy: accuracy,
       );
 
-  factory TrainingStatus.completed() => TrainingStatus(state: TrainingState.completed, progress: 100.0);
+  factory TrainingStatus.completed({
+    int epoch = 1,
+    int totalEpochs = 1,
+    int step = 1,
+    int totalSteps = 1,
+    double? loss,
+    double? accuracy,
+  }) =>
+      TrainingStatus(
+        state: TrainingState.completed,
+        progress: 100.0,
+        currentEpoch: epoch,
+        totalEpochs: totalEpochs,
+        currentStep: step,
+        totalSteps: totalSteps,
+        currentLoss: loss,
+        currentAccuracy: accuracy,
+      );
   
   factory TrainingStatus.error(String message) =>
       TrainingStatus(state: TrainingState.error, errorMessage: message);

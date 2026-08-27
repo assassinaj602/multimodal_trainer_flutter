@@ -44,6 +44,7 @@ class TrainerService {
   Stream<TrainingStepEvent> trainStream({
     required MultimodalDataset dataset,
     required TrainingConfig config,
+    Duration stepDelay = Duration.zero,
   }) async* {
     _isCancelled = false;
     final totalSteps = config.numEpochs * dataset.sampleCount;
@@ -64,6 +65,10 @@ class TrainerService {
           prompt: sample.instruction,
           learningRate: config.learningRate,
         );
+
+        if (stepDelay > Duration.zero) {
+          await Future.delayed(stepDelay);
+        }
 
         currentStep++;
         final progress = (currentStep / (totalSteps > 0 ? totalSteps : 1)) * 100.0;

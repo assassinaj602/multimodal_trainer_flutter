@@ -37,9 +37,12 @@ void main() {
     await tester.ensureVisible(find.text('Start'));
     await tester.tap(find.text('Start'));
     await tester.pump();
-    await tester.pump(const Duration(milliseconds: 100));
-
     // Confirm state has progressed
     expect(find.text('Live Loss Curve'), findsOneWidget);
+
+    // Stop to clean up timers
+    await tester.ensureVisible(find.text('Stop'));
+    await tester.tap(find.text('Stop'));
+    await tester.pumpAndSettle();
   });
 }

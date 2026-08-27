@@ -66,7 +66,11 @@ class TrainingProvider extends ChangeNotifier {
 
     _trainingSubscription?.cancel();
     _trainingSubscription = _trainer
-        .trainStream(dataset: dataset!, config: config)
+        .trainStream(
+          dataset: dataset!,
+          config: config,
+          stepDelay: const Duration(milliseconds: 250),
+        )
         .listen(
       (event) {
         _lossHistory.add(FlSpot(event.step.toDouble(), event.loss));
@@ -85,7 +89,14 @@ class TrainingProvider extends ChangeNotifier {
         notifyListeners();
       },
       onDone: () {
-        status = TrainingStatus.completed();
+        status = TrainingStatus.completed(
+          epoch: config.numEpochs,
+          totalEpochs: config.numEpochs,
+          step: config.numEpochs * (dataset?.sampleCount ?? 1),
+          totalSteps: config.numEpochs * (dataset?.sampleCount ?? 1),
+          loss: status.currentLoss,
+          accuracy: status.currentAccuracy,
+        );
         Logger.log('Training session completed successfully');
         notifyListeners();
       },
