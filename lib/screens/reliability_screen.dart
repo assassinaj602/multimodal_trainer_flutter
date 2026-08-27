@@ -128,10 +128,14 @@ class ReliabilityScreen extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      Wrap(
+                        alignment: WrapAlignment.spaceBetween,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        spacing: 8,
+                        runSpacing: 8,
                         children: [
                           Row(
+                            mainAxisSize: MainAxisSize.min,
                             children: [
                               Icon(
                                 report.passed ? Icons.check_circle : Icons.warning_amber_rounded,
@@ -140,17 +144,19 @@ class ReliabilityScreen extends StatelessWidget {
                               ),
                               const SizedBox(width: 8),
                               Text(
-                                report.passed ? 'All Stress Tests Passed' : 'Stress Tests Found Failures',
-                                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                report.passed ? 'All Tests Passed' : 'Failures Detected',
+                                style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                               ),
                             ],
                           ),
                           Chip(
+                            visualDensity: VisualDensity.compact,
                             label: Text(
                               '${report.failureCount} Failures',
                               style: TextStyle(
                                 color: report.passed ? Colors.greenAccent : Colors.orangeAccent,
                                 fontWeight: FontWeight.bold,
+                                fontSize: 12,
                               ),
                             ),
                           ),

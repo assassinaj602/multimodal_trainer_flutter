@@ -24,16 +24,23 @@ class LossGraph extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Row(
-                  children: [
-                    Icon(Icons.show_chart, color: Colors.deepPurpleAccent),
-                    SizedBox(width: 8),
-                    Text(
-                      'Live Loss Curve',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                    ),
-                  ],
+                const Expanded(
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.show_chart, color: Colors.deepPurpleAccent),
+                      SizedBox(width: 8),
+                      Flexible(
+                        child: Text(
+                          'Live Loss Curve',
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
+                const SizedBox(width: 8),
                 Text(
                   'Latest: ${spots.last.y.toStringAsFixed(4)}',
                   style: const TextStyle(
