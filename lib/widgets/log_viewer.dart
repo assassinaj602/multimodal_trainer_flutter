@@ -47,16 +47,23 @@ class _LogViewerState extends State<LogViewer> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Row(
-                  children: [
-                    Icon(Icons.terminal, color: Colors.greenAccent),
-                    SizedBox(width: 8),
-                    Text(
-                      'Console & Training Stream',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                    ),
-                  ],
+                const Expanded(
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.terminal, color: Colors.greenAccent),
+                      SizedBox(width: 8),
+                      Flexible(
+                        child: Text(
+                          'Console & Logs',
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
+                const SizedBox(width: 8),
                 Text(
                   '${widget.logs.length} lines',
                   style: const TextStyle(fontSize: 12, color: Colors.white54),
