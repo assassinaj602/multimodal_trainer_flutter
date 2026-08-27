@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/model_info.dart';
 import '../providers/model_provider.dart';
+import '../providers/validation_provider.dart';
 
 class ModelStatusCard extends StatelessWidget {
   final ModelStatus status;
@@ -98,12 +99,29 @@ class ModelStatusCard extends StatelessWidget {
             Text('Host Memory: ${status.memoryUsage} / ${status.totalMemory}'),
             Text('Active Path: ${status.modelPath}', overflow: TextOverflow.ellipsis),
             const SizedBox(height: 12),
-            Row(
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
               children: [
                 ElevatedButton.icon(
                   onPressed: () => modelProvider.loadModel(status.modelPath),
                   icon: const Icon(Icons.refresh, size: 18),
                   label: const Text('Initialize Model Context'),
+                ),
+                OutlinedButton.icon(
+                  onPressed: () {
+                    final validationProvider = Provider.of<ValidationProvider>(context, listen: false);
+                    validationProvider.runValidation(status.modelPath, isPreTraining: true);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Running SATE AI Stress Test... check SATE AI tab for report'),
+                        backgroundColor: Colors.deepPurple,
+                        duration: Duration(seconds: 2),
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.shield, size: 18, color: Colors.purpleAccent),
+                  label: const Text('SATE AI Stress Test'),
                 ),
               ],
             ),

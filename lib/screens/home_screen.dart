@@ -9,6 +9,7 @@ import '../widgets/progress_indicator.dart';
 import '../widgets/training_controls.dart';
 import 'dataset_screen.dart';
 import 'graph_screen.dart';
+import 'reliability_screen.dart';
 import 'training_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -28,6 +29,7 @@ class _HomeScreenState extends State<HomeScreen> {
       const TrainingScreen(),
       const DatasetScreen(),
       const GraphScreen(),
+      const ReliabilityScreen(),
     ];
 
     return Scaffold(
@@ -47,6 +49,7 @@ class _HomeScreenState extends State<HomeScreen> {
           NavigationDestination(icon: Icon(Icons.fitness_center_outlined), selectedIcon: Icon(Icons.fitness_center), label: 'Trainer'),
           NavigationDestination(icon: Icon(Icons.folder_copy_outlined), selectedIcon: Icon(Icons.folder_copy), label: 'Dataset'),
           NavigationDestination(icon: Icon(Icons.analytics_outlined), selectedIcon: Icon(Icons.analytics), label: 'Analytics'),
+          NavigationDestination(icon: Icon(Icons.shield_outlined), selectedIcon: Icon(Icons.shield), label: 'SATE AI'),
         ],
       ),
     );

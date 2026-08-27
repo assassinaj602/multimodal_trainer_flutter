@@ -3,12 +3,14 @@ import 'package:provider/provider.dart';
 import 'providers/app_state.dart';
 import 'providers/model_provider.dart';
 import 'providers/training_provider.dart';
+import 'providers/validation_provider.dart';
 
 import 'screens/home_screen.dart';
 import 'services/dataset_service.dart';
 import 'services/model_service.dart';
 import 'services/native_bridge.dart';
 import 'services/trainer_service.dart';
+import 'services/validation_service.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,12 +28,14 @@ class MultimodalTrainerApp extends StatelessWidget {
     final modelService = ModelService(bridge);
     final trainerService = TrainerService(bridge);
     final datasetService = DatasetService();
+    final validationService = ValidationService(bridge);
 
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AppState()),
         ChangeNotifierProvider(create: (_) => ModelProvider(modelService)),
         ChangeNotifierProvider(create: (_) => TrainingProvider(trainerService, datasetService)),
+        ChangeNotifierProvider(create: (_) => ValidationProvider(validationService)),
       ],
       child: MaterialApp(
         title: 'Multimodal Trainer',
