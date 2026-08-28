@@ -34,7 +34,9 @@ class TrainingProvider extends ChangeNotifier {
   bool get canSave => status.state == TrainingState.completed || status.state == TrainingState.paused || isRunning;
   bool get canExport => status.state == TrainingState.completed || status.state == TrainingState.paused;
 
-  TrainingProvider(this._trainer, this._datasetService);
+  TrainingProvider(this._trainer, this._datasetService) {
+    loadDataset();
+  }
 
   Future<void> loadDataset([String? customPath]) async {
     final targetPath = customPath ?? config.datasetPath;

@@ -79,9 +79,25 @@ class DatasetScreen extends StatelessWidget {
                     margin: const EdgeInsets.symmetric(vertical: 6.0),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     child: ListTile(
-                      leading: CircleAvatar(
-                        backgroundColor: Colors.deepPurple,
-                        child: Text('${index + 1}'),
+                      leading: ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Image.asset(
+                          sample.imagePath,
+                          width: 52,
+                          height: 52,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) => Container(
+                            width: 52,
+                            height: 52,
+                            color: Colors.deepPurple.shade800,
+                            child: Center(
+                              child: Text(
+                                '${index + 1}',
+                                style: const TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          ),
+                        ),
                       ),
                       title: Text(
                         sample.instruction,
