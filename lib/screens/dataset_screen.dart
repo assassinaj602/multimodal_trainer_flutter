@@ -79,6 +79,40 @@ class DatasetScreen extends StatelessWidget {
                     margin: const EdgeInsets.symmetric(vertical: 6.0),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     child: ListTile(
+                      onTap: () {
+                        showDialog(
+                          context: context,
+                          builder: (ctx) => AlertDialog(
+                            backgroundColor: const Color(0xFF1E1E2E),
+                            title: Text('Sample #${index + 1} Inspection'),
+                            content: SingleChildScrollView(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(12),
+                                    child: Image.asset(
+                                      sample.imagePath,
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (_, __, ___) => const Icon(Icons.broken_image, size: 80),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 12),
+                                  const Text('Prompt Instruction:', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.cyanAccent)),
+                                  Text(sample.instruction, style: const TextStyle(fontSize: 13)),
+                                  const SizedBox(height: 8),
+                                  const Text('Target Output Response:', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.greenAccent)),
+                                  Text(sample.response, style: const TextStyle(fontSize: 13)),
+                                ],
+                              ),
+                            ),
+                            actions: [
+                              TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Close')),
+                            ],
+                          ),
+                        );
+                      },
                       leading: ClipRRect(
                         borderRadius: BorderRadius.circular(8),
                         child: Image.asset(
