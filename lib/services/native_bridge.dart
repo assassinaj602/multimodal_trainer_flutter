@@ -106,17 +106,26 @@ class NativeBridge {
     return true;
   }
 
+  void resetSession() {
+    _simulatedLossFactor = 1.0;
+  }
+
   Future<StepResult> runTrainingStep({
     required String imagePath,
     required String prompt,
     required double learningRate,
+    int step = 1,
+    int totalSteps = 100,
   }) async {
     Logger.log('NativeBridge: Executing training step with lr=$learningRate');
 
     if (!_bindings.isLoaded || _bindings.runTrainingStep == null || _activeHandle == null) {
-      final currentLoss = 0.85 * _simulatedLossFactor;
-      final gradNorm = 0.045 * _simulatedLossFactor;
-      _simulatedLossFactor = max(0.05, _simulatedLossFactor * 0.90);
+      // Realistic exponential loss decay with slight batch variance
+      final progressRatio = (step / max(1, totalSteps)).clamp(0.0, 1.0);
+      final decay = exp(-progressRatio * 3.5);
+      final noise = (sin(step * 1.5) * 0.035) * decay;
+      final currentLoss = max(0.045, (0.95 * decay) + noise);
+      final gradNorm = max(0.005, (0.08 * decay) + (noise * 0.1));
 
       return StepResult(
         loss: currentLoss,

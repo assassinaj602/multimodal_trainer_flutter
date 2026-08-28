@@ -64,6 +64,8 @@ class TrainerService {
           imagePath: sample.imagePath,
           prompt: sample.instruction,
           learningRate: config.learningRate,
+          step: currentStep + 1,
+          totalSteps: totalSteps,
         );
 
         if (stepDelay > Duration.zero) {
