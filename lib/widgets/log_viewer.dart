@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class LogViewer extends StatefulWidget {
   final List<String> logs;
@@ -11,6 +12,27 @@ class LogViewer extends StatefulWidget {
 
 class _LogViewerState extends State<LogViewer> {
   final ScrollController _scrollController = ScrollController();
+
+  void _copyAllLogs() {
+    if (widget.logs.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('No logs to copy'),
+          duration: Duration(seconds: 1),
+        ),
+      );
+      return;
+    }
+    final allLogs = widget.logs.join('\n');
+    Clipboard.setData(ClipboardData(text: allLogs));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Copied ${widget.logs.length} log lines to clipboard!'),
+        backgroundColor: Colors.green.shade800,
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
 
   @override
   void didUpdateWidget(covariant LogViewer oldWidget) {
@@ -63,14 +85,25 @@ class _LogViewerState extends State<LogViewer> {
                     ],
                   ),
                 ),
-                const SizedBox(width: 8),
-                Text(
-                  '${widget.logs.length} lines',
-                  style: const TextStyle(fontSize: 12, color: Colors.white54),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      '${widget.logs.length} lines',
+                      style: const TextStyle(fontSize: 12, color: Colors.white54),
+                    ),
+                    const SizedBox(width: 4),
+                    IconButton(
+                      icon: const Icon(Icons.copy_all, size: 18, color: Colors.cyanAccent),
+                      tooltip: 'Copy All Logs',
+                      visualDensity: VisualDensity.compact,
+                      onPressed: _copyAllLogs,
+                    ),
+                  ],
                 ),
               ],
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 8),
             Container(
               height: 140,
               width: double.infinity,
@@ -87,32 +120,34 @@ class _LogViewerState extends State<LogViewer> {
                         style: TextStyle(color: Colors.white38, fontSize: 12),
                       ),
                     )
-                  : ListView.builder(
-                      controller: _scrollController,
-                      itemCount: widget.logs.length,
-                      itemBuilder: (context, index) {
-                        final log = widget.logs[index];
-                        Color logColor = Colors.greenAccent;
-                        if (log.contains('Error')) {
-                          logColor = Colors.redAccent;
-                        } else if (log.contains('Loading') || log.contains('Dataset')) {
-                          logColor = Colors.cyanAccent;
-                        } else if (log.contains('Loss')) {
-                          logColor = Colors.amberAccent;
-                        }
+                  : SelectionArea(
+                      child: ListView.builder(
+                        controller: _scrollController,
+                        itemCount: widget.logs.length,
+                        itemBuilder: (context, index) {
+                          final log = widget.logs[index];
+                          Color logColor = Colors.greenAccent;
+                          if (log.contains('Error')) {
+                            logColor = Colors.redAccent;
+                          } else if (log.contains('Loading') || log.contains('Dataset')) {
+                            logColor = Colors.cyanAccent;
+                          } else if (log.contains('Loss')) {
+                            logColor = Colors.amberAccent;
+                          }
 
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 2.0),
-                          child: Text(
-                            log,
-                            style: TextStyle(
-                              fontFamily: 'monospace',
-                              fontSize: 11,
-                              color: logColor,
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 2.0),
+                            child: Text(
+                              log,
+                              style: TextStyle(
+                                fontFamily: 'monospace',
+                                fontSize: 11,
+                                color: logColor,
+                              ),
                             ),
-                          ),
-                        );
-                      },
+                          );
+                        },
+                      ),
                     ),
             ),
           ],
