@@ -54,3 +54,10 @@ app.*.map.json
 assets/models/*.gguf
 assets/models/*.bin
 !assets/models/.gitkeep
+
+# Native & Android Build outputs
+/android/build/
+*.so
+*.apk
+*.a
+
