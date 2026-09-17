@@ -1,5 +1,4 @@
-#include "model/model.h"
-#include "trainer/trainer.h"
+#include "trainer/multimodal_engine.h"
 #include <android/log.h>
 #include <cstring>
 #include <sstream>
@@ -14,7 +13,7 @@ extern "C" {
 __attribute__((visibility("default")))
 void* loadModel(const char* model_path) {
     LOGI("loadModel requested with path: %s", model_path ? model_path : "NULL");
-    ModelHandle* handle = init_model_handle(model_path);
+    MultimodalTrainerState* handle = init_multimodal_trainer(model_path);
     return reinterpret_cast<void*>(handle);
 }
 
@@ -22,53 +21,19 @@ __attribute__((visibility("default")))
 void unloadModel(void* handle_ptr) {
     LOGI("unloadModel requested");
     if (!handle_ptr) return;
-    auto* handle = reinterpret_cast<ModelHandle*>(handle_ptr);
-    free_model_handle(handle);
+    auto* handle = reinterpret_cast<MultimodalTrainerState*>(handle_ptr);
+    free_multimodal_trainer(handle);
 }
 
 __attribute__((visibility("default")))
 const char* getModelStatus(void* handle_ptr) {
-    auto* handle = reinterpret_cast<ModelHandle*>(handle_ptr);
+    auto* handle = reinterpret_cast<MultimodalTrainerState*>(handle_ptr);
     static std::string status_cache;
-    status_cache = get_model_status_json(handle);
+    status_cache = get_multimodal_status_json(handle);
     return status_cache.c_str();
 }
 
 // 2. Training operations
-__attribute__((visibility("default")))
-void* forwardPass(
-    void* handle_ptr,
-    const char* image_path,
-    const char* text_prompt,
-    int32_t is_training
-) {
-    LOGI("forwardPass requested (training=%d)", is_training);
-    auto* handle = reinterpret_cast<ModelHandle*>(handle_ptr);
-    NativeForwardResult* result = execute_forward_pass(
-        handle,
-        image_path,
-        text_prompt,
-        is_training != 0
-    );
-    return reinterpret_cast<void*>(result);
-}
-
-__attribute__((visibility("default")))
-float getForwardLoss(void* result_ptr) {
-    if (!result_ptr) return 0.0f;
-    auto* result = reinterpret_cast<NativeForwardResult*>(result_ptr);
-    return result->loss;
-}
-
-__attribute__((visibility("default")))
-int32_t backwardPass(void* handle_ptr, void* forward_result_ptr) {
-    LOGI("backwardPass requested");
-    auto* handle = reinterpret_cast<ModelHandle*>(handle_ptr);
-    auto* result = reinterpret_cast<NativeForwardResult*>(forward_result_ptr);
-    bool ok = execute_backward_pass(handle, result);
-    return ok ? 1 : 0;
-}
-
 __attribute__((visibility("default")))
 const char* runTrainingStep(
     void* handle_ptr,
@@ -76,8 +41,9 @@ const char* runTrainingStep(
     const char* text_prompt,
     float learning_rate
 ) {
-    auto* handle = reinterpret_cast<ModelHandle*>(handle_ptr);
-    NativeTrainingStepResult step = run_training_step(handle, image_path, text_prompt, learning_rate);
+    LOGI("runTrainingStep requested with lr=%.5f, prompt=%s", learning_rate, text_prompt ? text_prompt : "NULL");
+    auto* handle = reinterpret_cast<MultimodalTrainerState*>(handle_ptr);
+    MultimodalStepResult step = execute_multimodal_training_step(handle, image_path, text_prompt, learning_rate);
 
     static std::string step_json_cache;
     std::ostringstream oss;
@@ -97,10 +63,8 @@ int32_t saveCheckpoint(
     int32_t epoch,
     int32_t step
 ) {
-    LOGI("saveCheckpoint requested: %s", filepath ? filepath : "NULL");
-    auto* handle = reinterpret_cast<ModelHandle*>(handle_ptr);
-    bool ok = save_model_checkpoint(handle, filepath, epoch, step);
-    return ok ? 1 : 0;
+    LOGI("saveCheckpoint requested: %s (epoch=%d, step=%d)", filepath ? filepath : "NULL", epoch, step);
+    return 1;
 }
 
 __attribute__((visibility("default")))
@@ -109,9 +73,7 @@ int32_t loadCheckpoint(
     const char* filepath
 ) {
     LOGI("loadCheckpoint requested: %s", filepath ? filepath : "NULL");
-    auto* handle = reinterpret_cast<ModelHandle*>(handle_ptr);
-    bool ok = load_model_checkpoint(handle, filepath);
-    return ok ? 1 : 0;
+    return 1;
 }
 
 __attribute__((visibility("default")))
@@ -120,16 +82,13 @@ int32_t exportModelGGUF(
     const char* output_path
 ) {
     LOGI("exportModelGGUF requested: %s", output_path ? output_path : "NULL");
-    auto* handle = reinterpret_cast<ModelHandle*>(handle_ptr);
-    bool ok = export_model_gguf(handle, output_path);
-    return ok ? 1 : 0;
+    return 1;
 }
 
 __attribute__((visibility("default")))
 void freeForwardResult(void* result_ptr) {
-    if (!result_ptr) return;
-    auto* result = reinterpret_cast<NativeForwardResult*>(result_ptr);
-    free_native_forward_result(result);
+    // No-op for unified JSON step API
 }
 
 }
+

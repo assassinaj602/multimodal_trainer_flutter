@@ -119,7 +119,18 @@ class NativeBridge {
   }) async {
     Logger.log('NativeBridge: Executing training step with lr=$learningRate');
 
+    if (_bindings.isLoaded && _activeHandle == null && _bindings.loadModel != null) {
+      Logger.log('NativeBridge: Auto-initializing active model handle for native training');
+      final pathPtr = 'qwen2.5-0.5b-multimodal'.toNativeUtf8();
+      try {
+        _activeHandle = _bindings.loadModel!(pathPtr);
+      } finally {
+        malloc.free(pathPtr);
+      }
+    }
+
     if (!_bindings.isLoaded || _bindings.runTrainingStep == null || _activeHandle == null) {
+      Logger.log('NativeBridge: Using simulated model engine fallback (isLoaded=${_bindings.isLoaded}, handle=$_activeHandle)');
       // Natural per-sample variance (fluctuates up and down based on prompt complexity)
       final promptHash = prompt.codeUnits.fold<int>(0, (prev, elem) => prev + elem);
       final sampleNoise = ((promptHash % 17) / 17.0) * 0.32;
@@ -138,6 +149,7 @@ class NativeBridge {
       );
     }
 
+    Logger.log('NativeBridge: Dispatching FFI runTrainingStep to libmultimodal_trainer.so on-device');
     final imgPtr = imagePath.toNativeUtf8();
     final promptPtr = prompt.toNativeUtf8();
 
