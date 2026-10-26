@@ -10,6 +10,7 @@ class TrainingStepEvent {
   final int totalSteps;
   final double loss;
   final double gradientNorm;
+  final double accuracy;
   final double progress;
 
   TrainingStepEvent({
@@ -18,6 +19,7 @@ class TrainingStepEvent {
     required this.totalSteps,
     required this.loss,
     required this.gradientNorm,
+    this.accuracy = 0.0,
     required this.progress,
   });
 }
@@ -31,11 +33,13 @@ class TrainerService {
   Future<double> runStep({
     required String imagePath,
     required String prompt,
+    String response = '',
     double learningRate = 0.001,
   }) async {
     final step = await _bridge.runTrainingStep(
       imagePath: imagePath,
       prompt: prompt,
+      responseLabel: response,
       learningRate: learningRate,
     );
     return step.loss;
@@ -63,6 +67,7 @@ class TrainerService {
         final stepResult = await _bridge.runTrainingStep(
           imagePath: sample.imagePath,
           prompt: sample.instruction,
+          responseLabel: sample.response,
           learningRate: config.learningRate,
           step: currentStep + 1,
           totalSteps: totalSteps,
@@ -81,6 +86,7 @@ class TrainerService {
           totalSteps: totalSteps,
           loss: stepResult.loss,
           gradientNorm: stepResult.gradientNorm,
+          accuracy: stepResult.accuracy,
           progress: progress,
         );
       }

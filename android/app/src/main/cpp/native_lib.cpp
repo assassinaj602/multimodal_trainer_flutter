@@ -39,16 +39,19 @@ const char* runTrainingStep(
     void* handle_ptr,
     const char* image_path,
     const char* text_prompt,
+    const char* response_label,
     float learning_rate
 ) {
-    LOGI("runTrainingStep requested with lr=%.5f, prompt=%s", learning_rate, text_prompt ? text_prompt : "NULL");
+    LOGI("runTrainingStep requested with lr=%.5f, prompt=%s, resp=%s", 
+         learning_rate, text_prompt ? text_prompt : "NULL", response_label ? response_label : "NULL");
     auto* handle = reinterpret_cast<MultimodalTrainerState*>(handle_ptr);
-    MultimodalStepResult step = execute_multimodal_training_step(handle, image_path, text_prompt, learning_rate);
+    MultimodalStepResult step = execute_multimodal_training_step(handle, image_path, text_prompt, response_label, learning_rate);
 
     static std::string step_json_cache;
     std::ostringstream oss;
     oss << "{\"loss\":" << step.loss
         << ",\"gradient_norm\":" << step.gradient_norm
+        << ",\"accuracy\":" << step.accuracy
         << ",\"success\":" << (step.success ? "true" : "false")
         << "}";
     step_json_cache = oss.str();

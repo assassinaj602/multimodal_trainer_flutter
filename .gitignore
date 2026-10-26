@@ -61,3 +61,7 @@ assets/models/*.bin
 *.apk
 *.a
 
+
+# Verification artifacts
+verify_run.mp4
+*.mp4

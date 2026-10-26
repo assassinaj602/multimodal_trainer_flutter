@@ -76,7 +76,6 @@ class TrainingProvider extends ChangeNotifier {
         .listen(
       (event) {
         _lossHistory.add(FlSpot(event.step.toDouble(), event.loss));
-        final accuracy = (100.0 - (event.loss * 40.0)).clamp(50.0, 99.5);
 
         status = TrainingStatus.running(
           epoch: event.epoch,
@@ -85,9 +84,9 @@ class TrainingProvider extends ChangeNotifier {
           totalSteps: event.totalSteps,
           progress: event.progress,
           loss: event.loss,
-          accuracy: accuracy,
+          accuracy: event.accuracy,
         );
-        Logger.log('Step ${event.step}/${event.totalSteps} (Epoch ${event.epoch}) - Loss: ${event.loss.toStringAsFixed(4)} - Accuracy: ${accuracy.toStringAsFixed(1)}%');
+        Logger.log('Step ${event.step}/${event.totalSteps} (Epoch ${event.epoch}) - Loss: ${event.loss.toStringAsFixed(4)} - Real Accuracy: ${event.accuracy.toStringAsFixed(1)}%');
         notifyListeners();
       },
       onDone: () {

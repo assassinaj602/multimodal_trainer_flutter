@@ -41,12 +41,14 @@ typedef RunTrainingStepNative = Pointer<Utf8> Function(
   Pointer<Void> handle,
   Pointer<Utf8> imagePath,
   Pointer<Utf8> textPrompt,
+  Pointer<Utf8> responseLabel,
   Float learningRate,
 );
 typedef RunTrainingStepDart = Pointer<Utf8> Function(
   Pointer<Void> handle,
   Pointer<Utf8> imagePath,
   Pointer<Utf8> textPrompt,
+  Pointer<Utf8> responseLabel,
   double learningRate,
 );
 

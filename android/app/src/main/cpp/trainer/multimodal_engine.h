@@ -3,17 +3,19 @@
 #include "finetune_ops/core/tensor.h"
 #include "finetune_ops/graph/qwen_model.h"
 #include "finetune_ops/core/ops.h"
+#include "finetune_ops/core/tokenizer.h"
 #include <string>
 #include <vector>
 #include <memory>
 
 struct MultimodalTrainerState {
     std::shared_ptr<ops::QwenModel> model;
+    std::shared_ptr<ops::SimpleTokenizer> tokenizer;
     ops::QwenConfig config;
     ops::TensorPtr W_proj; // [hidden_size, vision_dim] trainable projector
     int64_t vision_dim = 32;
     int64_t num_patches = 4;
-    int64_t num_text_tokens = 4;
+    int64_t max_seq_len = 16;
     std::string model_path;
     bool is_initialized = false;
 };
@@ -25,6 +27,7 @@ std::string get_multimodal_status_json(MultimodalTrainerState* state);
 struct MultimodalStepResult {
     float loss;
     float gradient_norm;
+    float accuracy;
     bool success;
 };
 
@@ -32,5 +35,6 @@ MultimodalStepResult execute_multimodal_training_step(
     MultimodalTrainerState* state,
     const char* image_path,
     const char* prompt,
+    const char* response_label,
     float learning_rate
 );
