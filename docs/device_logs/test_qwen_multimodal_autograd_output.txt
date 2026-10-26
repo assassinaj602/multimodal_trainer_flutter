@@ -1,0 +1,25 @@
+================================================================================
+Test Executable: test_qwen_multimodal_autograd
+Architecture: ARM64 (Android aarch64 NDK r27) / Host x86_64
+Verification Command:
+  adb -s 07574251CA001558 push test_qwen_multimodal_autograd /data/local/tmp/
+  adb -s 07574251CA001558 shell chmod +x /data/local/tmp/test_qwen_multimodal_autograd
+  adb -s 07574251CA001558 shell /data/local/tmp/test_qwen_multimodal_autograd
+================================================================================
+
+==========================================================
+Running Qwen Multimodal Autograd & Parameter Update Test
+==========================================================
+--- Step 1: Initialize Qwen Model ---
+--- Step 2: Execute Initial Multimodal Forward Pass ---
+Initial Multimodal Loss: 6.89716
+--- Step 3: Execute Analytical Autograd Backward Pass ---
+W_proj shape: [64, 32]
+W_proj grad shape: [64, 32]
+Projector Gradient Norm: 14.4404
+--- Step 4: Perform Parameter Update Step & Verify Loss Decrease ---
+Updated Multimodal Loss: 6.70156
+Loss Delta: 0.195603
+[SUCCESS] Multimodal forward -> backward -> gradient update verified!
+
+[ALL TESTS PASSED SUCCESSFULLY]
