@@ -1,0 +1,11 @@
+================================================================================
+Test Executable: test_concat
+Provenance: PHYSICAL ANDROID DEVICE (TECNO CH7n / arm64-v8a / Serial: 07574251CA001558)
+Executed Via: adb -s 07574251CA001558 shell /data/local/tmp/test_concat
+Timestamp: 2026-10-26 17:02:37 UTC
+Toolchain: Android NDK r27 (12077973), Target API 30 (aarch64-linux-android)
+================================================================================
+
+[PASS] test_concat_2d_forward_and_backward
+[PASS] test_concat_3d_sequence_splice
+[ALL PASS] Concat operator and autograd tests succeeded.
