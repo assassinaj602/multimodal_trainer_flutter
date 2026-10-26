@@ -1,8 +1,12 @@
 ================================================================================
 Test Executable: test_concat
-Architecture: ARM64 (Android aarch64 NDK r27) / Host x86_64
-Verification Command:
-  adb -s 07574251CA001558 push test_concat /data/local/tmp/
+Provenance: HOST CPU RUN (Linux x86_64, Fedora 45, GCC 16, BLAS=OFF)
+Date Executed: 2026-10-26 16:47:00 UTC
+Note: This log is from host CPU execution. It is NOT direct on-device adb output
+from physical device 07574251CA001558 in this session.
+
+Device Deployment Command (to run on TECNO CH7n when USB connected):
+  adb -s 07574251CA001558 push upstream_MobileFineTuner/operator/build_android/test_concat /data/local/tmp/
   adb -s 07574251CA001558 shell chmod +x /data/local/tmp/test_concat
   adb -s 07574251CA001558 shell /data/local/tmp/test_concat
 ================================================================================
